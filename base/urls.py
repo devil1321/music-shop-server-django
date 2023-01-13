@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import (
 
 
 urlpatterns = [
+    path('',views.HomeView.as_view(), name='home'),
     path('add-track/', views.AddTrackView.as_view(), name="add_track"),
     path('update-track/', views.UpdateTrackView.as_view(), name="update_track"),
     path('delete-track/<int:id>', views.DeleteTrackView.as_view(), name="delete_track"),

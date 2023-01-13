@@ -12,6 +12,13 @@ from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+class HomeView(APIView):
+    permission_classes = ()
+    template_name = "index.html"
+    def get(self, request, *args, **kwargs):
+        return render(self.request,self.template_name)
+
 class InitView(APIView):
     permission_classes = (IsAuthenticated,)
     template_name = "home.html"

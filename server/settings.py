@@ -130,12 +130,12 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shop',
-        'USER': 'postgres',
-        'PASSWORD': 'devil267#$',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'mysql.connector.django', 
+        'NAME': 'music_shop',
+        'USER': 'devil1321',
+        'PASSWORD': 'mysql267#$',
+        'HOST': 'devil1321.mysql.pythonanywhere-services.com',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
@@ -167,7 +167,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
