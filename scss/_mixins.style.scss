@@ -1,0 +1,48 @@
+// 640px 1024px 1400px
+$breakpoints-up:("medium":"40em", "large":"64.5em", "xlarge":"87.5em");
+// 639px 1023px 1399px
+$breakpoints-down:("small":"39.9375em", "sm-med":"33.75em", "medium-sm":"64em", "medium":"80em", "large":"85,375em");
+@mixin breakpoint-up($size) {
+    @media(min-device-width: map-get($breakpoints-up, $size)) {
+        @content;
+    }
+}
+
+@mixin breakpoint-down($size) {
+    @media(max-device-width: map-get($breakpoints-down, $size)) {
+        @content;
+    }
+}
+
+@mixin breakpoint-down-l($size) {
+    @media(max-device-width: map-get($breakpoints-down, $size)) and (orientation: landscape) {
+        @content;
+    }
+}
+
+@mixin breakpoint-up-l($size) {
+    @media(min-device-width: map-get($breakpoints-down, $size)) and (orientation: landscape) {
+        @content;
+    }
+}
+
+// convert px to rem
+@function pxToRem($pxsize, $rembase:16) {
+    @return ($pxsize / $rembase)+rem;
+}
+
+@mixin createFlex($direction, $jc, $ai, $fw) {
+    display: flex;
+    @if($direction) {
+        flex-direction: $direction;
+    }
+    @if($jc) {
+        justify-content: $jc;
+    }
+    @if($ai) {
+        align-items: $ai;
+    }
+    @if($fw) {
+        flex-wrap: $fw;
+    }
+}
