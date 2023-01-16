@@ -1,17 +1,18 @@
 import base64, os
 import json
 import re
+import stripe
 from django.http import JsonResponse
 from django.shortcuts import render,redirect
-from .models import Track,Person
+from .models import Price, Track,Person
 from django.core import serializers
 # Create your views here.
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class HomeView(APIView):
     permission_classes = ()
@@ -114,16 +115,19 @@ class AddTrackView(APIView):
         author = self.request.POST.get('author')
         tags = self.request.POST.get('tags')
         genres = self.request.POST.get('genres')
+        price = self.request.POST.get('price')
+        price_id = self.request.POST.get('price_id')
+        
         if self.request.user.is_staff:
             if self.model.objects.filter(title=title).exists():
                 return JsonResponse({'msg':"Track is arleady on list"})
             else:
-                modelToSave = self.model.objects.create(file=file,image=image,title=title,author=author,tags=tags,genres=genres)
+                modelToSave = self.model.objects.create(file=file,image=image,title=title,author=author,tags=tags,genres=genres,price=price,price_id=price_id)
                 try:
                     modelToSave.save()
                     return JsonResponse({"msg":"Track added"})
                 except:
-                    return JsonResponse({'msg':'Fill file image and title'})
+                    return JsonResponse({'msg':'Fill all fields'})
         else:
             return JsonResponse({'msg':'You`re not allowed'})
 
@@ -142,6 +146,8 @@ class UpdateTrackView(APIView):
             author = self.request.POST.get('author')
             tags = self.request.POST.get('tags')
             genres = self.request.POST.get('genres')
+            price = self.request.POST.get('price')
+            price_id = self.request.POST.get('price_id')
             track = self.model.objects.get(id=id)
             track.file = file
             track.image = image
@@ -149,6 +155,8 @@ class UpdateTrackView(APIView):
             track.author = author
             track.tags = tags
             track.genres = genres
+            track.price = price
+            track.price_id = price_id
             try:
                 track.save()
                 return JsonResponse({"msg":"Track Updated"})
@@ -177,6 +185,25 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return redirect('home',{'user':self.request.user})
+
+
+
+class CreateCheckoutSessionView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, *args, **kwargs):
+        cart = json.loads(self.request.body)
+        if settings.DEBUG:
+            domain = "http://localhost:8000"
+            checkout_session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items = cart,
+                mode='payment',
+                success_url=domain + '/success/',
+                cancel_url=domain + '/cancel/',
+            )
+        return redirect(checkout_session.url)
+
 
 
     

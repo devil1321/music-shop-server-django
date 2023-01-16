@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from  .webhooks import stripe_webhook
 from django.contrib.auth import views as auth_views
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.views import (
@@ -23,6 +24,9 @@ urlpatterns = [
     path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/logout/',TokenBlacklistView.as_view(), name="logout-api"),
+    
+    path('create-checkout-session/', views.CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
+    path('stripe-webhook/', stripe_webhook, name='webhook'),
     
     path('register/', csrf_exempt(views.RegisterView.as_view()), name="register"),
     path('reset_password/', auth_views.PasswordResetView.as_view(template_name = "reset_password.html"), name ='reset_password'),

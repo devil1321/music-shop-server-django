@@ -29,6 +29,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_POSRT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 's.dominik1321@gmail.com'
+EMAIL_HOST_PASSWORD = 'rbugibxheklwnrrx'
+
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51JjgcSIU8m26At6w7C8Qkkl9ekeA5oTZgOy0yB0pIxSKv9EjmzHoRyKfPThOue9E3eSY1D9LToIg4SKoKX9Bjch500SigRPOeV'
+STRIPE_SECRET_KEY = 'sk_test_51JjgcSIU8m26At6wk1y07nVHgvQ4OgGdrcha1Twjk76exDpp8R9PmmwL0GPDeIqCo4OkXcwxCHI9aoSiZa8Tm18t00e4ZLzWSt'
+STRIPE_WEBHOOK_SECRET = "stripe_music_shop_1321"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10000),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -121,6 +131,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'server.wsgi.application'
 

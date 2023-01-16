@@ -10,9 +10,11 @@ class Track(models.Model):
     author = models.CharField(default='',max_length=200)
     genres = models.CharField(default='',max_length=200)
     tags = models.CharField(default='',max_length=200)
-    
+    price_id = models.CharField(max_length=100)
+    price = models.IntegerField(default=0)  # cents
     def __unicode__(self):
         return self.title
+    
     
 class Person(User):
     pass
