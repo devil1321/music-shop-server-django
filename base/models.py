@@ -16,8 +16,9 @@ class Track(models.Model):
         return self.title
     
     
-class Person(User):
+class Person(models.Model):
     pass
+    user_id = models.ForeignKey(User,on_delete=models.CASCADE)
     buyed = ListCharField(
         default="",
         base_field=models.CharField(default="",max_length=50),

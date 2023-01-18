@@ -4,14 +4,13 @@ import re
 import stripe
 from django.http import JsonResponse
 from django.shortcuts import render,redirect
-from .models import Price, Track,Person
+from .models import Track,Person,User
 from django.core import serializers
 # Create your views here.
 from rest_framework.views import APIView
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class HomeView(APIView):
@@ -35,7 +34,7 @@ class InitPersonView(APIView):
     model = Person
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
-            person  = self.model.objects.get(pk=self.request.user.id)
+            person  = self.model.objects.get(user_id=self.request.user.id)
             return JsonResponse(serializers.serialize('json', [person]), safe=False)
         else:
             return JsonResponse({'msg':'You`re not logged in.'})
@@ -47,31 +46,30 @@ class FileView(APIView):
      def post(self, request, *args, **kwargs):
          body = json.loads(request.body) 
          if self.request.user:
-            for file in os.listdir(os.path.join(os.getcwd(),"media")):
-               if file == body["params"]['name']:
-                   name = body["params"]['name']
-                   with open(os.path.join(os.getcwd(),"media/" + name), "rb") as music_file:
-                       encoded_string = base64.b64encode(music_file.read()).decode('utf-8')
-                       string = f'media/{file}'.format(file=file)
-                       string = re.sub(r' ',"_",string)
-                       track = self.model.objects.filter(file=string)
-                       if track.exists():
-                            encoded_image = base64.b64encode(track[0].image.file.read()).decode('utf-8')
-                            fileData = {
-                                "id":track[0].id,
-                                "base64":'data:audio/mpeg;base64,' + encoded_string,
-                                "image":'data:image/jpeg;base64,' + encoded_image,
-                                'title':track[0].title,
-                                'author':track[0].author,
-                                'genres':track[0].genres,
-                                'tags':track[0].tags,
-                            }
-                            return JsonResponse({"file":fileData})  
-                       else:
-                            return JsonResponse({"msg":'Track not exists'})  
+            track_id = body["params"]['id']
+            track = self.model.objects.filter(id=track_id)
+            print(track[0].file)
+            with open(os.path.join(os.getcwd() , str(track[0].file)), "rb") as music_file:
+                encoded_string = base64.b64encode(music_file.read()).decode('utf-8')
+                if track.exists():
+                     encoded_image = base64.b64encode(track[0].image.file.read()).decode('utf-8')
+                     fileData = {
+                         "id":track[0].id,
+                         'price':track[0].price,
+                         'price_id':track[0].price_id,
+                         "base64":'data:audio/mpeg;base64,' + encoded_string,
+                         "image":'data:image/jpeg;base64,' + encoded_image,
+                         'title':track[0].title,
+                         'author':track[0].author,
+                         'genres':track[0].genres,
+                         'tags':track[0].tags,
+                     }
+                     return JsonResponse({"file":fileData})  
+                else:
+                     return JsonResponse({"msg":'Track not exists'})  
          else:
-             return JsonResponse({"msg":"file not found"})
- 
+             return JsonResponse({"msg":"You`re not logged in"})
+
 class FilesView(APIView):
     template_name=""
     model = Track
@@ -80,8 +78,8 @@ class FilesView(APIView):
     def get(self,request,*args,**kwargs):
         if self.request.user:           
             files = []
-            for file in os.listdir(os.path.join(os.getcwd(),"media")):
-                 with open(os.path.join(os.getcwd(),"media/" + file), "rb") as music_file:
+            for file in os.listdir(os.path.join(os.getcwd() , "media/")):
+                 with open(os.path.join(os.getcwd() , "media/" , file), "rb") as music_file:
                        encoded_string = base64.b64encode(music_file.read()).decode('utf-8')
                        string = f'media/{file}'.format(file=file)
                        string = re.sub(r' ',"_",string)
@@ -90,6 +88,8 @@ class FilesView(APIView):
                             encoded_image = base64.b64encode(track[0].image.file.read()).decode('utf-8')
                             fileData = {
                                 'id':track[0].id,
+                                'price':track[0].price,
+                                'price_id':track[0].price_id,
                                 "base64":'data:audio/mpeg;base64,' + encoded_string,
                                 "image":'data:image/jpeg;base64,' + encoded_image,
                                 'title':track[0].title,
@@ -179,12 +179,17 @@ class DeleteTrackView(APIView):
  
 class RegisterView(APIView):
     authentication_classes = [] #disables authentication
-    permission_classes = [] #disables perm
+    permission_classes = [] #disables per
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        user = request.data
+        serializer = UserSerializer(data=user)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return redirect('home',{'user':self.request.user})
+        try:
+            serializer.save()
+            return JsonResponse({'msg':'User Registered. You can login now.'})
+        except:
+            return JsonResponse({'msg':'User Not Registered. You can`t login now.'})
+            
 
 
 

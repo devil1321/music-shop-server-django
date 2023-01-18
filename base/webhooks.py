@@ -2,7 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Track, Price
+from .models import Track
 from django.template.loader import render_to_string
 import stripe
 

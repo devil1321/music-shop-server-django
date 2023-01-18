@@ -69,17 +69,13 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',  
     'rest_framework_simplejwt',
-    'rest_framework.authtoken',
-    'rest_framework_simplejwt.token_blacklist'
 ]
-AUTH_USER_MODEL = 'auth.User'
+# AUTH_USER_MODEL = 'auth.User'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
     'rest_framework.permissions.IsAuthenticated',
 ),
     'DEFAULT_AUTHENTICATION_CLASSES':(
-        'rest_framework.authentication.TokenAuthentication',   
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
@@ -98,11 +94,12 @@ MIDDLEWARE = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1*','htts://127.0.0.1*','http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1*','htts://127.0.0.1*','http://127.0.0.1:8000','https://devil1321.pythonanywhere.com*']
 
 CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8000', # For react front end
-    'http://127.0.0.1:7000', # For Django
+    'http://127.0.0.1:7000', 
+    'https://devil1321.pythonanywhere.com'# For Django
 )
 
 ALLOWED_HOSTS = [
@@ -141,11 +138,11 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django', 
-        'NAME': 'music_shop',
-        'USER': 'devil1321',
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'shop_music',
+        'USER': 'devil1321$shop_music',
         'PASSWORD': 'mysql267#$',
-        'HOST': 'devil1321.mysql.pythonanywhere-services.com',   # Or an IP Address that your DB is hosted on
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
 }
